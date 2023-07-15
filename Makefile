@@ -1,14 +1,21 @@
 NAME		= telegram_bot
-SRCS		= request.cpp main.cpp
-OBJS		= ${SRCS:.cpp=.o}
-INCLUDES	= -I/usr/local/include
+
+SRCS_PATH	= ./srcs
+SRCS_FILES	= main.cpp request.cpp commands.cpp
+
+OBJS_PATH	= ./objs
+OBJS_FILES	= ${SRCS_FILES:.cpp=.o}
+OBJS		= ${addprefix ${OBJS_PATH}/, ${OBJS_FILES}}
+
+INC			= /usr/local/include ./incs
+INCLUDES	= $(INC:%=-I %)
 
 LDLIBS		= -lTgBot -lboost_system -lssl -lcrypto -lpthread -lcurl
 
 DEPS		= ${OBJS:%.o=%.d}
 
 CXX			= g++
-CXXFLAGS	= -std=c++14 -fsanitize=address -fsanitize=leak -fsanitize=undefined
+CXXFLAGS	= -std=c++14 -O2 #-fsanitize=address -fsanitize=leak -fsanitize=undefined
 
 RM			= rm -rf
 
@@ -17,13 +24,16 @@ all: ${NAME}
 ${NAME}: ${OBJS}
 		${CXX} ${CXXFLAGS} ${INCLUDES} ${OBJS} ${LDLIBS} -o ${NAME}
 
-%.o:%.cpp
+${OBJS_PATH}/%.o : ${SRCS_PATH}/%.cpp | ${OBJS_PATH}
 		${CXX} ${CXXFLAGS} ${INCLUDES} -MMD -c $< -o $@
+
+${OBJS_PATH}:
+	mkdir -p ${OBJS_PATH}
 
 -include ${DEPS}
 
 clean:
-		${RM} ${OBJS} ${DEPS}
+		${RM} ${OBJS_PATH}
 
 fclean: clean
 		${RM} ${NAME}
