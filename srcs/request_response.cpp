@@ -3,20 +3,27 @@
 
 #include <curl/curl.h>
 
-#include "joke_generator.hpp"
+#include "json.hpp"
 
-static std::string argument_to_query(const joke& joke)
+#include "request_response.hpp"
+
+request::request()
+{
+    joke_category.insert("Any");
+}
+
+std::string request::argument_to_query(const request& request)
 {
     std::string arg;
 
-    for(auto i : joke.user_category)
+    for(auto i : request.joke_category)
     {
         arg += i;
     }
     return std::move(arg);
 }
 
-void request_hh(struct response& resp, const joke& joke)
+void request::request_joke(struct response& resp)
 {
     CURL *curl;
     FILE *fp;
@@ -33,7 +40,7 @@ void request_hh(struct response& resp, const joke& joke)
             return ;
         }
 		std::string query("https://v2.jokeapi.dev/joke/");
-		query += argument_to_query(joke);
+		query += argument_to_query(*this);
         curl_easy_setopt(curl, CURLOPT_URL, query.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 
@@ -44,11 +51,41 @@ void request_hh(struct response& resp, const joke& joke)
             resp.is_error = true;
             return ;
         }
-
         curl_easy_cleanup(curl);
         fclose(fp);
+        resp.update();
     }
 
     return ;
 }
 
+response::response():
+    is_error(false)
+{
+    ;
+}
+
+void response::update()
+{
+    std::ifstream f("response.json");
+    if (!f.is_open())
+    {
+        is_error = true;
+        return ;
+    }
+    nlohmann::json data = nlohmann::json::parse(f);
+    if (data["error"])
+    {
+        is_error = true;
+        f.close();
+        return ;
+    }
+    type = data["type"];
+    if (type == "single")
+        joke = data["joke"];
+    else
+    {
+        setup = data["setup"];
+        delivery = data["delivery"];
+    }
+}

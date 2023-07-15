@@ -1,7 +1,7 @@
 NAME		= telegram_bot
 
 SRCS_PATH	= ./srcs
-SRCS_FILES	= main.cpp request.cpp commands.cpp
+SRCS_FILES	= main.cpp request_response.cpp bot.cpp utils.cpp
 
 OBJS_PATH	= ./objs
 OBJS_FILES	= ${SRCS_FILES:.cpp=.o}
