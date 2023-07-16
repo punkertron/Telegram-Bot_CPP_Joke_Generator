@@ -33,9 +33,21 @@ static const std::vector<std::string> Stickers = {
 	"CAACAgIAAxkBAAEJtMBks8lDbMxp8k9wTc-n4ieBwyFFzwACzxkAAiUBwEh5PNDrZsRPSS8E"
 };
 
+// KeyboradOneCol
 static const std::string GenJokeKey = "Generate Joke \xF0\x9F\x9A\x80";
 static const std::string SetUpKey = "Set up filters \xF0\x9F\x94\xA7";
 static const std::string ShowFiltersKey = "Show filters \xF0\x9F\x94\x8E";
+
+// KeyboardSettings
+static const std::string SafeModeKey = "Safe-mode \xF0\x9F\x91\xB6";
+static const std::string CategKey = "Categories \xF0\x9F\x94\xAE";
+static const std::string LangKey = "Langage \xF0\x9F\x87\xAC\xF0\x9F\x87\xA7";
+static const std::string BlackKey = "Blacklist \xF0\x9F\x9A\xAB";
+static const std::string TypeKey = "Type \xF0\x9F\x98\xAF";
+static const std::string DefaultKey = "Make default \xE2\x99\xBB";
+static const std::string BackKey = "\xF0\x9F\x94\x99";
+
+
 
 
 
@@ -57,6 +69,14 @@ tgbot::tgbot(const std::string &api_key):
 	m_bot.getApi().setMyCommands(commands);
 
 	createOneColumnKeyboard({GenJokeKey, SetUpKey, ShowFiltersKey}, keyboardOneCol);
+
+	createKeyboard({
+		{SafeModeKey},
+		{CategKey, LangKey},
+		{BlackKey, TypeKey},
+		{DefaultKey},
+		{BackKey}
+	}, keyboardSettings);
 }
 
 static void random_smile(const TgBot::Api& api, const int64_t chat_id)
@@ -114,13 +134,23 @@ void tgbot::generate_joke(TgBot::Message::Ptr message)
 
 void tgbot::any_message()
 {
-	m_bot.getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
+	m_bot.getEvents().onAnyMessage([&](TgBot::Message::Ptr message)
+	{
 		if (message->text == GenJokeKey)
 			generate_joke(message);
 		else if (message->text == SetUpKey)
-			;
+			m_bot.getApi().sendMessage(message->chat->id, "Settings...", false, 0, keyboardSettings);
 		else if (message->text == ShowFiltersKey)
 			m_bot.getApi().sendMessage(message->chat->id, req.show_filters(), false, 0, keyboardOneCol);
+		
+		else if (message->text == SafeModeKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setSafeMode(), false, 0, keyboardSettings);
+		
+		else if (message->text == DefaultKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setDefault(), false, 0, keyboardOneCol);
+		
+		else if (message->text == BackKey)
+			m_bot.getApi().sendMessage(message->chat->id, "Coming back...", false, 0, keyboardOneCol);
 		else
 			m_bot.getApi().sendMessage(message->chat->id
 				, message->chat->firstName + ", you have entered an invalid command.\nPlease, try again. I might get angry and stop giving you jokes!"

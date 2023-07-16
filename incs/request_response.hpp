@@ -17,7 +17,7 @@ private:
 	std::string m_safe_mode;
 
 
-	std::string argument_to_query(const request& request);
+	std::string argument_to_query() const;
 
 public:
 	request();
@@ -25,7 +25,11 @@ public:
 
 	void request_joke(struct response& resp);
 
-	std::string show_filters() const;
+	const std::string show_filters() const;
+	
+	const std::string setSafeMode();
+	const std::string setDefault();
+
 };
 
 class response

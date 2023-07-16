@@ -15,6 +15,7 @@ private:
 	TgBot::Bot m_bot;
 	TgBot::TgLongPoll m_longPoll;
 	TgBot::ReplyKeyboardMarkup::Ptr keyboardOneCol;
+	TgBot::ReplyKeyboardMarkup::Ptr keyboardSettings;
 
 	class request req;
 	class response res;

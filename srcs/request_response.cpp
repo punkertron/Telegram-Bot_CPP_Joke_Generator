@@ -14,18 +14,35 @@ request::request():
     m_blacklist.insert("None");
 }
 
-std::string request::argument_to_query(const request& request)
+std::string request::argument_to_query() const
 {
     std::string arg;
 
-    for(auto i : request.m_joke_category)
+    for(auto s : m_joke_category)
+        arg = arg + s + ',';
+    arg.erase(--arg.end()); // erase last ','
+
+    arg += "?format=json";
+
+    if (m_safe_mode == "Yes")
+        arg += "&safe-mode";
+    if (m_language != "en - English")
+        arg = arg + "&lang=" + m_language.substr(0, 2);
+    if (m_type != "Any")
+        arg = arg + "&type=" + m_type;
+
+    if (m_blacklist.find("None") == m_blacklist.end())
     {
-        arg += i;
+        arg += "&blacklistFlags=";
+        for (auto s : m_blacklist)
+            arg = arg + s + ',';
+        arg.erase(--arg.end()); // erase last ','
     }
+    std::cerr << arg << std::endl;
     return std::move(arg);
 }
 
-std::string request::show_filters() const
+const std::string request::show_filters() const
 {
     std::string res;
 
@@ -42,6 +59,34 @@ std::string request::show_filters() const
     res += "\nSafe-mode: ";
     res += m_safe_mode;
     return (std::move(res));
+}
+
+const std::string request::setSafeMode()
+{
+    std::string res("Safe-mode is set to ");
+    if (m_safe_mode == "No")
+    {
+        m_safe_mode = "Yes";
+        res += "Yes";
+    }
+    else
+    {
+        m_safe_mode = "No";
+        res += "No";
+    }
+    return std::move(res);
+}
+
+const std::string request::setDefault()
+{
+    m_language = "en - English";
+    m_type = "Any";
+    m_safe_mode = "No";
+    m_joke_category.clear();
+    m_joke_category.insert("Any");
+    m_blacklist.clear();
+    m_blacklist.insert("None");
+    return std::move(std::string("All settings are set to default!"));
 }
 
 void request::request_joke(struct response& resp)
@@ -61,7 +106,7 @@ void request::request_joke(struct response& resp)
             return ;
         }
 		std::string query("https://v2.jokeapi.dev/joke/");
-		query += argument_to_query(*this);
+		query += argument_to_query();
         curl_easy_setopt(curl, CURLOPT_URL, query.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 
