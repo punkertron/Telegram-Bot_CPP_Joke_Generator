@@ -37,8 +37,12 @@ static const std::string GenJokeKey = "Generate Joke \xF0\x9F\x9A\x80";
 static const std::string SetUpKey = "Set up filters \xF0\x9F\x94\xA7";
 static const std::string ShowFiltersKey = "Show filters \xF0\x9F\x94\x8E";
 
+
+
 tgbot::tgbot(const std::string &api_key):
-	m_bot(api_key), m_longPoll(m_bot), keyboardOneCol(new TgBot::ReplyKeyboardMarkup)
+	m_bot(api_key), m_longPoll(m_bot),
+	keyboardOneCol(new TgBot::ReplyKeyboardMarkup),
+	keyboardSettings(new TgBot::ReplyKeyboardMarkup)
 {
 	std::vector<TgBot::BotCommand::Ptr> commands;
 
@@ -57,13 +61,13 @@ tgbot::tgbot(const std::string &api_key):
 
 static void random_smile(const TgBot::Api& api, const int64_t chat_id)
 {
-	srand(time(NULL));
+	std::srand(std::time(NULL));
 
-	int r = rand();
-	if (r % 3 == 1)
-		api.sendMessage(chat_id, Emodjis[r % Emodjis.size()]);
-	else if (r % 3 == 2)
-		api.sendSticker(chat_id, Stickers[r % Stickers.size()]);
+	int r1 = std::rand(), r2 = std::rand();
+	if (r1 % 3 == 1)
+		api.sendMessage(chat_id, Emodjis[r2 % Emodjis.size()]);
+	else if (r1 % 3 == 2)
+		api.sendSticker(chat_id, Stickers[r2 % Stickers.size()]);
 }
 
 
@@ -118,7 +122,9 @@ void tgbot::any_message()
 		else if (message->text == ShowFiltersKey)
 			m_bot.getApi().sendMessage(message->chat->id, req.show_filters(), false, 0, keyboardOneCol);
 		else
-			;
+			m_bot.getApi().sendMessage(message->chat->id
+				, message->chat->firstName + ", you have entered an invalid command.\nPlease, try again. I might get angry and stop giving you jokes!"
+				, false, 0, keyboardOneCol);
 	});
 }
 
@@ -132,4 +138,3 @@ void tgbot::run()
         m_longPoll.start();
     }
 }
-
