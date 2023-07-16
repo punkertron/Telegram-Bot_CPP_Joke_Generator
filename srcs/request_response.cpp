@@ -7,20 +7,41 @@
 
 #include "request_response.hpp"
 
-request::request()
+request::request():
+    m_language("en - English"), m_type("Any"), m_safe_mode("No")
 {
-    joke_category.insert("Any");
+    m_joke_category.insert("Any");
+    m_blacklist.insert("None");
 }
 
 std::string request::argument_to_query(const request& request)
 {
     std::string arg;
 
-    for(auto i : request.joke_category)
+    for(auto i : request.m_joke_category)
     {
         arg += i;
     }
     return std::move(arg);
+}
+
+std::string request::show_filters() const
+{
+    std::string res;
+
+    res = "Categories: ";
+    for (auto s : m_joke_category)
+        res += s;
+    res += "\nLanguage: ";
+    res += m_language;
+    res += "\nBlacklist: ";
+    for (auto s : m_blacklist)
+        res += s;
+    res += "\nType (single or twopart): ";
+    res += m_type;
+    res += "\nSafe-mode: ";
+    res += m_safe_mode;
+    return (std::move(res));
 }
 
 void request::request_joke(struct response& resp)
@@ -36,7 +57,7 @@ void request::request_joke(struct response& resp)
         if (!fp)
         {
             std::cerr << "Can't open response.json" << std::endl;
-            resp.is_error = true;
+            resp.setError(true);
             return ;
         }
 		std::string query("https://v2.jokeapi.dev/joke/");
@@ -48,7 +69,7 @@ void request::request_joke(struct response& resp)
         if (res != CURLE_OK)
         {
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-            resp.is_error = true;
+            resp.setError(true);
             return ;
         }
         curl_easy_cleanup(curl);
@@ -57,12 +78,6 @@ void request::request_joke(struct response& resp)
     }
 
     return ;
-}
-
-response::response():
-    is_error(false)
-{
-    ;
 }
 
 void response::update()

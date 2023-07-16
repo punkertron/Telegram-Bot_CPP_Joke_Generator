@@ -10,7 +10,13 @@ class request
 {
 private:
 	//TgBot::User::Ptr user;
-	std::unordered_set<std::string> joke_category;
+	std::unordered_set<std::string> m_joke_category;
+	std::string m_language;
+	std::unordered_set<std::string> m_blacklist;
+	std::string m_type;
+	std::string m_safe_mode;
+
+
 	std::string argument_to_query(const request& request);
 
 public:
@@ -18,11 +24,14 @@ public:
 	~request() = default;
 
 	void request_joke(struct response& resp);
+
+	std::string show_filters() const;
 };
 
-struct response
+class response
 {
-	bool is_error;
+private:
+	bool is_error = false;
 	std::string type;
 
 	std::string joke; // type == single
@@ -30,7 +39,9 @@ struct response
     std::string setup; // type == twopart
 	std::string delivery; // type == twopart
 
-	response();
+public:
+	response() = default;
+	~response() = default;
 
 	void update();
 
@@ -57,6 +68,12 @@ struct response
 	const bool& getError() const
 	{
 		return is_error;
+	}
+
+	void setError(bool t)
+	{
+		is_error = t;
+		return ;
 	}
 	
 };

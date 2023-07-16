@@ -8,6 +8,8 @@ void createOneColumnKeyboard(const std::vector<std::string>& buttonStrings, TgBo
 	{
 		TgBot::KeyboardButton::Ptr button(new TgBot::KeyboardButton);
 		button->text = buttonStrings[i];
+		button->requestContact = false;
+		button->requestLocation = false;
 		kb->keyboard.push_back(std::move(std::vector<TgBot::KeyboardButton::Ptr> {button}));
 	}
 }
