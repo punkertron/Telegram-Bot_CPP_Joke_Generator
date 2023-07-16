@@ -56,12 +56,43 @@ static const std::string FrKey = "French \xF0\x9F\x87\xAB\xF0\x9F\x87\xB7";
 static const std::string PtKey = "Portuguiese 🇵🇹";
 static const std::string BackLanKey = "\xF0\x9F\x94\x9A";
 
+// KeyboardType
+static const std::string tAnyKey = "Any";
+static const std::string tSingleKey = "single";
+static const std::string tTwoKey = "twopart";
+static const std::string tBackKey = "b";
+
+// KeyboardBlacklist
+static const std::string bNoneKey = "None \xF0\x9F\x94\x9E";
+static const std::string bNSFWKey = "nsfw";
+static const std::string bReligKey = "religious";
+static const std::string bPolitKey = "political";
+static const std::string bRacistKey = "racist";
+static const std::string bSexistKey = "sexist";
+static const std::string bExplicitKey = "explicit";
+static const std::string bBackKey = "Back \xF0\x9F\x91\x88";
+
+// KeyboardCategory
+static const std::string cAnyKey = "Any";
+static const std::string cProgKey = "Programming";
+static const std::string cMiscKey = "Misc";
+static const std::string cDarkKey = "Dark";
+static const std::string cPunKey = "Pun";
+static const std::string cSpookyKey = "Spooky";
+static const std::string cChtmsKey = "Christmas";
+static const std::string cBackKey = "back";
+
+
+
 
 tgbot::tgbot(const std::string &api_key):
 	m_bot(api_key), m_longPoll(m_bot),
 	keyboardOneCol(new TgBot::ReplyKeyboardMarkup),
 	keyboardSettings(new TgBot::ReplyKeyboardMarkup),
-	keyboardLanguage(new TgBot::ReplyKeyboardMarkup)
+	keyboardLanguage(new TgBot::ReplyKeyboardMarkup),
+	keyboardType(new TgBot::ReplyKeyboardMarkup),
+	keyboardBlacklist(new TgBot::ReplyKeyboardMarkup),
+	keyboardCategory(new TgBot::ReplyKeyboardMarkup)
 {
 	std::vector<TgBot::BotCommand::Ptr> commands;
 
@@ -91,6 +122,24 @@ tgbot::tgbot(const std::string &api_key):
 		{FrKey, PtKey},
 		{BackLanKey}
 	}, keyboardLanguage);
+
+	createOneColumnKeyboard({tAnyKey, tSingleKey, tTwoKey, tBackKey}, keyboardType);
+
+	createKeyboard({
+		{bNoneKey},
+		{bNSFWKey, bReligKey},
+		{bPolitKey, bRacistKey},
+		{bSexistKey, bExplicitKey},
+		{bBackKey}
+	}, keyboardBlacklist);
+
+	createKeyboard({
+		{cAnyKey},
+		{cProgKey, cMiscKey},
+		{cDarkKey, cPunKey},
+		{cSpookyKey, cChtmsKey},
+		{cBackKey}
+	}, keyboardCategory);
 }
 
 static void random_smile(const TgBot::Api& api, const int64_t chat_id)
@@ -164,6 +213,8 @@ void tgbot::any_message()
 			m_bot.getApi().sendMessage(message->chat->id, "Coming back...", false, 0, keyboardOneCol);
 		else if (message->text == LangKey)
 			m_bot.getApi().sendMessage(message->chat->id, "Chose your language", false, 0, keyboardLanguage);
+		else if (message->text == BlackKey)
+			m_bot.getApi().sendMessage(message->chat->id, "Select flags to blacklist", false, 0, keyboardBlacklist);
 		
 		else if (message->text == EnKey)
 			m_bot.getApi().sendMessage(message->chat->id, req.setLang("en - English"), false, 0, keyboardSettings);
@@ -180,8 +231,25 @@ void tgbot::any_message()
 		else if (message->text == BackLanKey)
 			m_bot.getApi().sendMessage(message->chat->id, "Back to Settings", false, 0, keyboardSettings);
 
+		else if (message->text == bNoneKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setBlackList(bNoneKey), false, 0, keyboardSettings);
+		else if (message->text == bNSFWKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setBlackList(bNSFWKey), false, 0, keyboardSettings);
+		else if (message->text == bReligKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setBlackList(bReligKey), false, 0, keyboardSettings);
+		else if (message->text == bPolitKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setBlackList(bPolitKey), false, 0, keyboardSettings);
+		else if (message->text == bRacistKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setBlackList(bRacistKey), false, 0, keyboardSettings);
+		else if (message->text == bSexistKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setBlackList(bSexistKey), false, 0, keyboardSettings);
+		else if (message->text == bExplicitKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setBlackList(bExplicitKey), false, 0, keyboardSettings);
+		else if (message->text == bBackKey)
+			m_bot.getApi().sendMessage(message->chat->id, "Back to Settings", false, 0, keyboardSettings);
+	
 
-		else
+		else if (message->text != "/start" && message->text != "/help")
 			m_bot.getApi().sendMessage(message->chat->id
 				, message->chat->firstName + ", you have entered an invalid command.\nPlease, try again. I might get angry and stop giving you jokes!"
 				, false, 0, keyboardOneCol);

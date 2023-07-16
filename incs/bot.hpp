@@ -17,6 +17,10 @@ private:
 	TgBot::ReplyKeyboardMarkup::Ptr keyboardOneCol;
 	TgBot::ReplyKeyboardMarkup::Ptr keyboardSettings;
 	TgBot::ReplyKeyboardMarkup::Ptr keyboardLanguage;
+	TgBot::ReplyKeyboardMarkup::Ptr keyboardType;
+	TgBot::ReplyKeyboardMarkup::Ptr keyboardBlacklist;
+	TgBot::ReplyKeyboardMarkup::Ptr keyboardCategory;
+
 
 	class request req;
 	class response res;

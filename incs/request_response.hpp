@@ -30,6 +30,7 @@ public:
 	const std::string setSafeMode();
 	const std::string setDefault();
 	const std::string setLang(const char *s);
+	const std::string setBlackList(const std::string s);
 
 };
 

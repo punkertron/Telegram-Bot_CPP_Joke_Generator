@@ -53,7 +53,8 @@ const std::string request::show_filters() const
     res += m_language;
     res += "\nBlacklist: ";
     for (auto s : m_blacklist)
-        res += s;
+        res = res + s + ',';
+    res.erase(--res.end());
     res += "\nType (single or twopart): ";
     res += m_type;
     res += "\nSafe-mode: ";
@@ -97,6 +98,20 @@ const std::string request::setLang(const char *s)
     return std::move(res);
 }
 
+const std::string request::setBlackList(const std::string s)
+{
+    std::size_t pos = s.find(' ');
+    std::string temp(s.substr(0, pos));
+    if (temp == "None")
+    {
+        m_blacklist.clear();
+        m_blacklist.insert(std::move(temp));
+        return std::move(std::string("Reset to None"));
+    }
+    m_blacklist.erase("None");
+    m_blacklist.insert(temp);
+    return std::move(temp + std::string(" added to blacklist"));
+}
 
 
 
