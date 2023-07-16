@@ -89,6 +89,17 @@ const std::string request::setDefault()
     return std::move(std::string("All settings are set to default!"));
 }
 
+const std::string request::setLang(const char *s)
+{
+    m_language = s;
+    std::string res("Language is set to ");
+    res += s;
+    return std::move(res);
+}
+
+
+
+
 void request::request_joke(struct response& resp)
 {
     CURL *curl;

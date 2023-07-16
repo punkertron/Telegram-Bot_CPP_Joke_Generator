@@ -41,20 +41,27 @@ static const std::string ShowFiltersKey = "Show filters \xF0\x9F\x94\x8E";
 // KeyboardSettings
 static const std::string SafeModeKey = "Safe-mode \xF0\x9F\x91\xB6";
 static const std::string CategKey = "Categories \xF0\x9F\x94\xAE";
-static const std::string LangKey = "Langage \xF0\x9F\x87\xAC\xF0\x9F\x87\xA7";
+static const std::string LangKey = "Langage \xF0\x9F\x91\x80";
 static const std::string BlackKey = "Blacklist \xF0\x9F\x9A\xAB";
 static const std::string TypeKey = "Type \xF0\x9F\x98\xAF";
 static const std::string DefaultKey = "Make default \xE2\x99\xBB";
-static const std::string BackKey = "\xF0\x9F\x94\x99";
+static const std::string BackSetKey = "\xF0\x9F\x94\x99";
 
-
-
+// KeyboardLanguage
+static const std::string EnKey = "English \xF0\x9F\x87\xAC\xF0\x9F\x87\xA7";
+static const std::string DeKey = "German \xF0\x9F\x87\xA9\xF0\x9F\x87\xAA";
+static const std::string CsKey = "Czech 🇨🇿";
+static const std::string EsKey = "Spanish \xF0\x9F\x87\xAA\xF0\x9F\x87\xB8";
+static const std::string FrKey = "French \xF0\x9F\x87\xAB\xF0\x9F\x87\xB7";
+static const std::string PtKey = "Portuguiese 🇵🇹";
+static const std::string BackLanKey = "\xF0\x9F\x94\x9A";
 
 
 tgbot::tgbot(const std::string &api_key):
 	m_bot(api_key), m_longPoll(m_bot),
 	keyboardOneCol(new TgBot::ReplyKeyboardMarkup),
-	keyboardSettings(new TgBot::ReplyKeyboardMarkup)
+	keyboardSettings(new TgBot::ReplyKeyboardMarkup),
+	keyboardLanguage(new TgBot::ReplyKeyboardMarkup)
 {
 	std::vector<TgBot::BotCommand::Ptr> commands;
 
@@ -75,8 +82,15 @@ tgbot::tgbot(const std::string &api_key):
 		{CategKey, LangKey},
 		{BlackKey, TypeKey},
 		{DefaultKey},
-		{BackKey}
+		{BackSetKey}
 	}, keyboardSettings);
+
+	createKeyboard({
+		{EnKey, DeKey},
+		{CsKey, EsKey},
+		{FrKey, PtKey},
+		{BackLanKey}
+	}, keyboardLanguage);
 }
 
 static void random_smile(const TgBot::Api& api, const int64_t chat_id)
@@ -142,15 +156,31 @@ void tgbot::any_message()
 			m_bot.getApi().sendMessage(message->chat->id, "Settings...", false, 0, keyboardSettings);
 		else if (message->text == ShowFiltersKey)
 			m_bot.getApi().sendMessage(message->chat->id, req.show_filters(), false, 0, keyboardOneCol);
-		
 		else if (message->text == SafeModeKey)
 			m_bot.getApi().sendMessage(message->chat->id, req.setSafeMode(), false, 0, keyboardSettings);
-		
 		else if (message->text == DefaultKey)
 			m_bot.getApi().sendMessage(message->chat->id, req.setDefault(), false, 0, keyboardOneCol);
-		
-		else if (message->text == BackKey)
+		else if (message->text == BackSetKey)
 			m_bot.getApi().sendMessage(message->chat->id, "Coming back...", false, 0, keyboardOneCol);
+		else if (message->text == LangKey)
+			m_bot.getApi().sendMessage(message->chat->id, "Chose your language", false, 0, keyboardLanguage);
+		
+		else if (message->text == EnKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setLang("en - English"), false, 0, keyboardSettings);
+		else if (message->text == DeKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setLang("de - German"), false, 0, keyboardSettings);
+		else if (message->text == CsKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setLang("cs - Czech"), false, 0, keyboardSettings);
+		else if (message->text == EsKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setLang("es - Spanish"), false, 0, keyboardSettings);
+		else if (message->text == FrKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setLang("fr - French"), false, 0, keyboardSettings);
+		else if (message->text == PtKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setLang("pt - Portuguiese"), false, 0, keyboardSettings);
+		else if (message->text == BackLanKey)
+			m_bot.getApi().sendMessage(message->chat->id, "Back to Settings", false, 0, keyboardSettings);
+
+
 		else
 			m_bot.getApi().sendMessage(message->chat->id
 				, message->chat->firstName + ", you have entered an invalid command.\nPlease, try again. I might get angry and stop giving you jokes!"

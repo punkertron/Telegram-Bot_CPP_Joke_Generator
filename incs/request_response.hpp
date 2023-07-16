@@ -29,6 +29,7 @@ public:
 	
 	const std::string setSafeMode();
 	const std::string setDefault();
+	const std::string setLang(const char *s);
 
 };
 
