@@ -74,13 +74,13 @@ static const std::string bBackKey = "Back \xF0\x9F\x91\x88";
 
 // KeyboardCategory
 static const std::string cAnyKey = "Any";
-static const std::string cProgKey = "Programming";
-static const std::string cMiscKey = "Misc";
-static const std::string cDarkKey = "Dark";
-static const std::string cPunKey = "Pun";
-static const std::string cSpookyKey = "Spooky";
-static const std::string cChtmsKey = "Christmas";
-static const std::string cBackKey = "back";
+static const std::string cProgKey = "Programming \xF0\x9F\x92\xBB";
+static const std::string cMiscKey = "Misc \xF0\x9F\x98\x9D";
+static const std::string cDarkKey = "Dark \xF0\x9F\x98\x88";
+static const std::string cPunKey = "Pun \xF0\x9F\x98\xB2";
+static const std::string cSpookyKey = "Spooky \xF0\x9F\x91\xBB";
+static const std::string cChtmsKey = "Christmas \xF0\x9F\x8C\xB2";
+static const std::string cBackKey = "Back \xF0\x9F\x86\x99";
 
 
 
@@ -215,7 +215,9 @@ void tgbot::any_message()
 			m_bot.getApi().sendMessage(message->chat->id, "Chose your language", false, 0, keyboardLanguage);
 		else if (message->text == BlackKey)
 			m_bot.getApi().sendMessage(message->chat->id, "Select flags to blacklist", false, 0, keyboardBlacklist);
-		
+		else if (message->text == CategKey)
+			m_bot.getApi().sendMessage(message->chat->id, "Select category", false, 0, keyboardCategory);
+
 		else if (message->text == EnKey)
 			m_bot.getApi().sendMessage(message->chat->id, req.setLang("en - English"), false, 0, keyboardSettings);
 		else if (message->text == DeKey)
@@ -247,7 +249,23 @@ void tgbot::any_message()
 			m_bot.getApi().sendMessage(message->chat->id, req.setBlackList(bExplicitKey), false, 0, keyboardSettings);
 		else if (message->text == bBackKey)
 			m_bot.getApi().sendMessage(message->chat->id, "Back to Settings", false, 0, keyboardSettings);
-	
+
+		else if (message->text == cAnyKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setCategory(cAnyKey), false, 0, keyboardSettings);
+		else if (message->text == cProgKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setCategory(cProgKey), false, 0, keyboardSettings);
+		else if (message->text == cMiscKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setCategory(cMiscKey), false, 0, keyboardSettings);
+		else if (message->text == cDarkKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setCategory(cDarkKey), false, 0, keyboardSettings);
+		else if (message->text == cPunKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setCategory(cPunKey), false, 0, keyboardSettings);
+		else if (message->text == cSpookyKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setCategory(cSpookyKey), false, 0, keyboardSettings);
+		else if (message->text == cChtmsKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setCategory(cChtmsKey), false, 0, keyboardSettings);
+		else if (message->text == cBackKey)
+			m_bot.getApi().sendMessage(message->chat->id, "Back to Settings", false, 0, keyboardSettings);
 
 		else if (message->text != "/start" && message->text != "/help")
 			m_bot.getApi().sendMessage(message->chat->id

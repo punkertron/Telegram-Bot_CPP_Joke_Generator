@@ -31,6 +31,7 @@ public:
 	const std::string setDefault();
 	const std::string setLang(const char *s);
 	const std::string setBlackList(const std::string s);
+	const std::string setCategory(const std::string s);
 
 };
 

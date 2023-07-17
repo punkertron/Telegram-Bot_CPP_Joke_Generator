@@ -101,6 +101,8 @@ const std::string request::setLang(const char *s)
 const std::string request::setBlackList(const std::string s)
 {
     std::size_t pos = s.find(' ');
+    if (pos == std::string::npos)
+        pos = s.size();
     std::string temp(s.substr(0, pos));
     if (temp == "None")
     {
@@ -113,7 +115,22 @@ const std::string request::setBlackList(const std::string s)
     return std::move(temp + std::string(" added to blacklist"));
 }
 
-
+const std::string request::setCategory(const std::string s)
+{
+    std::size_t pos = s.find(' ');
+    if (pos == std::string::npos)
+        pos = s.size();
+    std::string temp(s.substr(0, pos));
+    if (temp == "Any")
+    {
+        m_joke_category.clear();
+        m_joke_category.insert(std::move(temp));
+        return std::move(std::string("Reset to Any"));
+    }
+    m_joke_category.erase("Any");
+    m_joke_category.insert(temp);
+    return std::move(temp + std::string(" added to category list"));
+}
 
 void request::request_joke(struct response& resp)
 {
