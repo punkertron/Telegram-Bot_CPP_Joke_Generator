@@ -38,7 +38,7 @@ std::string request::argument_to_query() const
             arg = arg + s + ',';
         arg.erase(--arg.end()); // erase last ','
     }
-    std::cerr << arg << std::endl;
+    std::cerr << "Query: " << arg << std::endl;
     return std::move(arg);
 }
 
@@ -130,6 +130,16 @@ const std::string request::setCategory(const std::string s)
     m_joke_category.erase("Any");
     m_joke_category.insert(temp);
     return std::move(temp + std::string(" added to category list"));
+}
+
+const std::string request::setType(const std::string s)
+{
+    std::size_t pos = s.find(' ');
+    if (pos == std::string::npos)
+        pos = s.size();
+    std::string temp(s.substr(0, pos));
+    m_type = temp;
+    return std::move(std::string("Type set to ") + m_type);
 }
 
 void request::request_joke(struct response& resp)

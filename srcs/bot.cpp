@@ -41,7 +41,7 @@ static const std::string ShowFiltersKey = "Show filters \xF0\x9F\x94\x8E";
 // KeyboardSettings
 static const std::string SafeModeKey = "Safe-mode \xF0\x9F\x91\xB6";
 static const std::string CategKey = "Categories \xF0\x9F\x94\xAE";
-static const std::string LangKey = "Langage \xF0\x9F\x91\x80";
+static const std::string LangKey = "Language \xF0\x9F\x91\x80";
 static const std::string BlackKey = "Blacklist \xF0\x9F\x9A\xAB";
 static const std::string TypeKey = "Type \xF0\x9F\x98\xAF";
 static const std::string DefaultKey = "Make default \xE2\x99\xBB";
@@ -53,14 +53,14 @@ static const std::string DeKey = "German \xF0\x9F\x87\xA9\xF0\x9F\x87\xAA";
 static const std::string CsKey = "Czech 🇨🇿";
 static const std::string EsKey = "Spanish \xF0\x9F\x87\xAA\xF0\x9F\x87\xB8";
 static const std::string FrKey = "French \xF0\x9F\x87\xAB\xF0\x9F\x87\xB7";
-static const std::string PtKey = "Portuguiese 🇵🇹";
+static const std::string PtKey = "Portuguese 🇵🇹";
 static const std::string BackLanKey = "\xF0\x9F\x94\x9A";
 
 // KeyboardType
-static const std::string tAnyKey = "Any";
-static const std::string tSingleKey = "single";
-static const std::string tTwoKey = "twopart";
-static const std::string tBackKey = "b";
+static const std::string tAnyKey = "Any \xE2\x9C\xA8 	";
+static const std::string tSingleKey = "single \x31\xE2\x83\xA3";
+static const std::string tTwoKey = "twopart \x32\xE2\x83\xA3";
+static const std::string tBackKey = "Back \xE2\x86\xA9";
 
 // KeyboardBlacklist
 static const std::string bNoneKey = "None \xF0\x9F\x94\x9E";
@@ -123,7 +123,11 @@ tgbot::tgbot(const std::string &api_key):
 		{BackLanKey}
 	}, keyboardLanguage);
 
-	createOneColumnKeyboard({tAnyKey, tSingleKey, tTwoKey, tBackKey}, keyboardType);
+	createKeyboard({
+		{tAnyKey},
+		{tSingleKey, tTwoKey},
+		{tBackKey}
+	}, keyboardType);
 
 	createKeyboard({
 		{bNoneKey},
@@ -153,11 +157,32 @@ static void random_smile(const TgBot::Api& api, const int64_t chat_id)
 		api.sendSticker(chat_id, Stickers[r2 % Stickers.size()]);
 }
 
+void tgbot::log_info(const std::string &fisrt_name, const std::string &last_name
+	, const std::string &username, const std::string &text) const
+{
+	// get current time
+    auto now = std::chrono::system_clock::now();
+
+    // convert to std::time_t
+    auto now_c = std::chrono::system_clock::to_time_t(now);
+    
+    // convert to local time
+    std::tm* local = std::localtime(&now_c);
+    
+    std::cerr << std::endl
+		<< std::ctime(&now_c)
+		<< "Username = " << username
+		<< ". First_name = " << fisrt_name
+		<< ". Last_name = " << last_name
+		<< ". Text = " << text
+		<< std::endl;
+}
 
 void tgbot::start()
 {
 	m_bot.getEvents().onCommand("start", [&](TgBot::Message::Ptr message) {
-        m_bot.getApi().sendMessage(message->chat->id, "Hello, " + message->chat->firstName + "!\n" +
+        log_info(message->chat->firstName, message->chat->lastName, message->chat->username, message->text);
+		m_bot.getApi().sendMessage(message->chat->id, "Hello, " + message->chat->firstName + "!\n" +
             "This bot will make you laugh!");
         m_bot.getApi().sendSticker(message->chat->id, "CAACAgIAAxkBAAEJs39ksteuz27hq4bNyGwfrJ3ppVKHpAAC8gADVp29ChCdi3ZTetJkLwQ",
 			0, keyboardOneCol);
@@ -167,7 +192,8 @@ void tgbot::start()
 void tgbot::help()
 {
 	m_bot.getEvents().onCommand("help", [&](TgBot::Message::Ptr message) {
-        m_bot.getApi().sendMessage(message->chat->id, "You don't need any help, " + message->chat->firstName + "!");
+        log_info(message->chat->firstName, message->chat->lastName, message->chat->username, message->text);
+		m_bot.getApi().sendMessage(message->chat->id, "You don't need any help, " + message->chat->firstName + "!");
     });
 }
 
@@ -199,6 +225,7 @@ void tgbot::any_message()
 {
 	m_bot.getEvents().onAnyMessage([&](TgBot::Message::Ptr message)
 	{
+		log_info(message->chat->firstName, message->chat->lastName, message->chat->username, message->text);
 		if (message->text == GenJokeKey)
 			generate_joke(message);
 		else if (message->text == SetUpKey)
@@ -217,6 +244,8 @@ void tgbot::any_message()
 			m_bot.getApi().sendMessage(message->chat->id, "Select flags to blacklist", false, 0, keyboardBlacklist);
 		else if (message->text == CategKey)
 			m_bot.getApi().sendMessage(message->chat->id, "Select category", false, 0, keyboardCategory);
+		else if (message->text == TypeKey)
+			m_bot.getApi().sendMessage(message->chat->id, "Select type", false, 0, keyboardType);
 
 		else if (message->text == EnKey)
 			m_bot.getApi().sendMessage(message->chat->id, req.setLang("en - English"), false, 0, keyboardSettings);
@@ -266,6 +295,16 @@ void tgbot::any_message()
 			m_bot.getApi().sendMessage(message->chat->id, req.setCategory(cChtmsKey), false, 0, keyboardSettings);
 		else if (message->text == cBackKey)
 			m_bot.getApi().sendMessage(message->chat->id, "Back to Settings", false, 0, keyboardSettings);
+
+		else if (message->text == tAnyKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setType(tAnyKey), false, 0, keyboardSettings);
+		else if (message->text == tSingleKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setType(tSingleKey), false, 0, keyboardSettings);
+		else if (message->text == tTwoKey)
+			m_bot.getApi().sendMessage(message->chat->id, req.setType(tTwoKey), false, 0, keyboardSettings);
+		else if (message->text == tBackKey)
+			m_bot.getApi().sendMessage(message->chat->id, "Back to Settings", false, 0, keyboardSettings);
+
 
 		else if (message->text != "/start" && message->text != "/help")
 			m_bot.getApi().sendMessage(message->chat->id

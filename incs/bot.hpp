@@ -38,6 +38,9 @@ public:
 	inline void help();
 	inline void any_message();
 
+	void log_info(const std::string &fisrt_name, const std::string &last_name,
+		const std::string &username, const std::string &text) const;
+
 	inline void generate_joke(TgBot::Message::Ptr message);
 };
 
