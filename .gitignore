@@ -3,3 +3,4 @@ objs/
 telegram_bot
 response.json
 .vscode/
+.env
