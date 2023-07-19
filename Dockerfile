@@ -3,7 +3,7 @@ FROM debian:bookworm
 LABEL author="punkertron"
 
 RUN apt-get update && \
-	apt-get install -y && \
+	apt-get install -y \
 		g++ \
 		make \
 		binutils \
@@ -19,6 +19,7 @@ RUN apt-get update && \
 WORKDIR /telegram_bot
 
 COPY incs incs
+COPY nlohmann-json nlohmann-json
 COPY srcs srcs
 COPY Makefile .
 

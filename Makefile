@@ -1,13 +1,15 @@
 NAME		= telegram_bot
 
 SRCS_PATH	= ./srcs
-SRCS_FILES	= main.cpp request_response.cpp bot.cpp utils.cpp
+SRCS_FILES	= main.cpp request.cpp response.cpp bot.cpp utils.cpp
+SRCS		= ${addprefix ${SRCS_PATH}/, ${SRCS_FILES}}
 
 OBJS_PATH	= ./objs
 OBJS_FILES	= ${SRCS_FILES:.cpp=.o}
 OBJS		= ${addprefix ${OBJS_PATH}/, ${OBJS_FILES}}
 
-INC			= /usr/local/include ./incs
+INC_DIR		= ./incs
+INC			= /usr/local/include ./nlohmann-json ${INC_DIR}
 INCLUDES	= $(INC:%=-I %)
 
 LDLIBS		= -lTgBot -lboost_system -lssl -lcrypto -lpthread -lcurl
@@ -40,4 +42,7 @@ fclean: clean
 
 re: fclean ${NAME}
 
-.PHONY: all clean fclean re
+format:
+	clang-format -i ${SRCS} ${INC_DIR}/*
+
+.PHONY: all clean fclean re format
