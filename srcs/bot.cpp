@@ -180,8 +180,8 @@ void tgbot::help() {
     });
 }
 
-void tgbot::generate_joke(TgBot::Message::Ptr message) {
-    req.request_joke(res);
+void tgbot::generate_joke(int64_t userId, TgBot::Message::Ptr message) {
+    req[userId].request_joke(res);
     if (res.getError())
         m_bot.getApi().sendMessage(
             message->chat->id,
@@ -208,20 +208,26 @@ void tgbot::any_message() {
     m_bot.getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
         log_info(message->chat->firstName, message->chat->lastName,
                  message->chat->username, message->text);
+        int64_t userId = message->from->id;
+        if (req.find(userId) == req.end())
+            req.insert(std::pair<int64_t, class request>(userId, {}));
         if (message->text == GenJokeKey)
-            generate_joke(message);
+            generate_joke(userId, message);
         else if (message->text == SetUpKey)
             m_bot.getApi().sendMessage(message->chat->id, "Settings...", false,
                                        0, keyboardSettings);
         else if (message->text == ShowFiltersKey)
-            m_bot.getApi().sendMessage(message->chat->id, req.show_filters(),
-                                       false, 0, keyboardOneCol);
+            m_bot.getApi().sendMessage(message->chat->id,
+                                       req[userId].show_filters(), false, 0,
+                                       keyboardOneCol);
         else if (message->text == SafeModeKey)
-            m_bot.getApi().sendMessage(message->chat->id, req.setSafeMode(),
-                                       false, 0, keyboardSettings);
+            m_bot.getApi().sendMessage(message->chat->id,
+                                       req[userId].setSafeMode(), false, 0,
+                                       keyboardSettings);
         else if (message->text == DefaultKey)
-            m_bot.getApi().sendMessage(message->chat->id, req.setDefault(),
-                                       false, 0, keyboardOneCol);
+            m_bot.getApi().sendMessage(message->chat->id,
+                                       req[userId].setDefault(), false, 0,
+                                       keyboardOneCol);
         else if (message->text == BackSetKey)
             m_bot.getApi().sendMessage(message->chat->id, "Coming back...",
                                        false, 0, keyboardOneCol);
@@ -241,106 +247,108 @@ void tgbot::any_message() {
 
         else if (message->text == EnKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setLang("en - English"), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setLang("en - English"),
+                                       false, 0, keyboardSettings);
         else if (message->text == DeKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setLang("de - German"), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setLang("de - German"),
+                                       false, 0, keyboardSettings);
         else if (message->text == CsKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setLang("cs - Czech"), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setLang("cs - Czech"), false,
+                                       0, keyboardSettings);
         else if (message->text == EsKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setLang("es - Spanish"), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setLang("es - Spanish"),
+                                       false, 0, keyboardSettings);
         else if (message->text == FrKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setLang("fr - French"), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setLang("fr - French"),
+                                       false, 0, keyboardSettings);
         else if (message->text == PtKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setLang("pt - Portuguiese"), false,
-                                       0, keyboardSettings);
+                                       req[userId].setLang("pt - Portuguiese"),
+                                       false, 0, keyboardSettings);
         else if (message->text == BackLanKey)
             m_bot.getApi().sendMessage(message->chat->id, "Back to Settings",
                                        false, 0, keyboardSettings);
 
         else if (message->text == bNoneKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setBlackList(bNoneKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setBlackList(bNoneKey),
+                                       false, 0, keyboardSettings);
         else if (message->text == bNSFWKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setBlackList(bNSFWKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setBlackList(bNSFWKey),
+                                       false, 0, keyboardSettings);
         else if (message->text == bReligKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setBlackList(bReligKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setBlackList(bReligKey),
+                                       false, 0, keyboardSettings);
         else if (message->text == bPolitKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setBlackList(bPolitKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setBlackList(bPolitKey),
+                                       false, 0, keyboardSettings);
         else if (message->text == bRacistKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setBlackList(bRacistKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setBlackList(bRacistKey),
+                                       false, 0, keyboardSettings);
         else if (message->text == bSexistKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setBlackList(bSexistKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setBlackList(bSexistKey),
+                                       false, 0, keyboardSettings);
         else if (message->text == bExplicitKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setBlackList(bExplicitKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setBlackList(bExplicitKey),
+                                       false, 0, keyboardSettings);
         else if (message->text == bBackKey)
             m_bot.getApi().sendMessage(message->chat->id, "Back to Settings",
                                        false, 0, keyboardSettings);
 
         else if (message->text == cAnyKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setCategory(cAnyKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setCategory(cAnyKey), false,
+                                       0, keyboardSettings);
         else if (message->text == cProgKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setCategory(cProgKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setCategory(cProgKey), false,
+                                       0, keyboardSettings);
         else if (message->text == cMiscKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setCategory(cMiscKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setCategory(cMiscKey), false,
+                                       0, keyboardSettings);
         else if (message->text == cDarkKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setCategory(cDarkKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setCategory(cDarkKey), false,
+                                       0, keyboardSettings);
         else if (message->text == cPunKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setCategory(cPunKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setCategory(cPunKey), false,
+                                       0, keyboardSettings);
         else if (message->text == cSpookyKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setCategory(cSpookyKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setCategory(cSpookyKey),
+                                       false, 0, keyboardSettings);
         else if (message->text == cChtmsKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setCategory(cChtmsKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setCategory(cChtmsKey),
+                                       false, 0, keyboardSettings);
         else if (message->text == cBackKey)
             m_bot.getApi().sendMessage(message->chat->id, "Back to Settings",
                                        false, 0, keyboardSettings);
 
         else if (message->text == tAnyKey)
-            m_bot.getApi().sendMessage(message->chat->id, req.setType(tAnyKey),
-                                       false, 0, keyboardSettings);
+            m_bot.getApi().sendMessage(message->chat->id,
+                                       req[userId].setType(tAnyKey), false, 0,
+                                       keyboardSettings);
         else if (message->text == tSingleKey)
             m_bot.getApi().sendMessage(message->chat->id,
-                                       req.setType(tSingleKey), false, 0,
-                                       keyboardSettings);
+                                       req[userId].setType(tSingleKey), false,
+                                       0, keyboardSettings);
         else if (message->text == tTwoKey)
-            m_bot.getApi().sendMessage(message->chat->id, req.setType(tTwoKey),
-                                       false, 0, keyboardSettings);
+            m_bot.getApi().sendMessage(message->chat->id,
+                                       req[userId].setType(tTwoKey), false, 0,
+                                       keyboardSettings);
         else if (message->text == tBackKey)
             m_bot.getApi().sendMessage(message->chat->id, "Back to Settings",
                                        false, 0, keyboardSettings);

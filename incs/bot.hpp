@@ -5,6 +5,7 @@
 
 #include <initializer_list>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "request.hpp"
@@ -21,7 +22,7 @@ class tgbot {
     TgBot::ReplyKeyboardMarkup::Ptr keyboardBlacklist;
     TgBot::ReplyKeyboardMarkup::Ptr keyboardCategory;
 
-    class request req;
+    std::unordered_map<int64_t, class request> req;
     class response res;
 
     const std::vector<std::string> bot_cmds = {"start", "help"};
@@ -41,7 +42,7 @@ class tgbot {
     void log_info(const std::string &fisrt_name, const std::string &last_name,
                   const std::string &username, const std::string &text) const;
 
-    inline void generate_joke(TgBot::Message::Ptr message);
+    inline void generate_joke(int64_t userId, TgBot::Message::Ptr message);
 };
 
 #endif  // BOT_HPP
