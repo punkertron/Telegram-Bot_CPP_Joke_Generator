@@ -7,3 +7,4 @@ api_key
 response.json
 telegram_bot
 docker-compose.yaml
+images

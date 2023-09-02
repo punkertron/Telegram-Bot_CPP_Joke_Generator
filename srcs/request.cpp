@@ -141,6 +141,8 @@ void request::request_joke(struct response &resp) {
             std::cerr << "curl_easy_perform() failed: "
                       << curl_easy_strerror(res) << std::endl;
             resp.setError(true);
+            curl_easy_cleanup(curl);
+            fclose(fp);
             return;
         }
         curl_easy_cleanup(curl);
