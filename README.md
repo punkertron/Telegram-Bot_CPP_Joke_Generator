@@ -25,5 +25,15 @@ API_KEY=[...]
 ---
 ## Some screenshots
 
-![](images/1.jpg)![](images/2.jpg)
-![](images/3.jpg)![](images/4.jpg)
+
+<div style="display: flex; justify-content: center;">
+  <img src="images/1.jpg" alt="Main menu" width="400" style="margin-right: 5px;" />
+  <img src="images/2.jpg" alt="Settings" width="400" />
+</div>
+
+<br> <!-- Add an empty line -->
+
+<div style="display: flex; justify-content: center;">
+  <img src="images/3.jpg" alt="Categories" width="400" style="margin-right: 5px;" />
+  <img src="images/4.jpg" alt="Generate and Show Filters" width="400" />
+</div>
