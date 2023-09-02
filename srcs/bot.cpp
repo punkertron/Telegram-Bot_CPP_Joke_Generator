@@ -137,7 +137,7 @@ static void random_smile(const TgBot::Api &api, const int64_t chat_id) {
         api.sendSticker(chat_id, Stickers[r2 % Stickers.size()]);
 }
 
-void tgbot::log_info(const std::string &fisrt_name,
+void tgbot::log_info(const int64_t userId, const std::string &fisrt_name,
                      const std::string &last_name, const std::string &username,
                      const std::string &text) const {
     // get current time
@@ -149,17 +149,17 @@ void tgbot::log_info(const std::string &fisrt_name,
     // convert to local time
     std::tm *local = std::localtime(&now_c);
 
-    std::cerr << std::endl
-              << std::ctime(&now_c) << "Username = " << username
+    std::cerr << std::ctime(&now_c) << "Username = " << username
               << ". First_name = " << fisrt_name
-              << ". Last_name = " << last_name << ". Text = " << text
-              << std::endl;
+              << ". Last_name = " << last_name << ". User_Id = " << userId
+              << ". Text = " << text << std::endl;
 }
 
 void tgbot::start() {
     m_bot.getEvents().onCommand("start", [&](TgBot::Message::Ptr message) {
-        log_info(message->chat->firstName, message->chat->lastName,
-                 message->chat->username, message->text);
+        // log_info(message->from->id, message->chat->firstName,
+        //          message->chat->lastName, message->chat->username,
+        //          message->text);
         m_bot.getApi().sendMessage(
             message->chat->id, "Hello, " + message->chat->firstName + "!\n" +
                                    "This bot will make you laugh!");
@@ -172,8 +172,9 @@ void tgbot::start() {
 
 void tgbot::help() {
     m_bot.getEvents().onCommand("help", [&](TgBot::Message::Ptr message) {
-        log_info(message->chat->firstName, message->chat->lastName,
-                 message->chat->username, message->text);
+        // log_info(message->from->id, message->chat->firstName,
+        //          message->chat->lastName, message->chat->username,
+        //          message->text);
         m_bot.getApi().sendMessage(
             message->chat->id,
             "You don't need any help, " + message->chat->firstName + "!");
@@ -206,8 +207,9 @@ void tgbot::generate_joke(int64_t userId, TgBot::Message::Ptr message) {
 
 void tgbot::any_message() {
     m_bot.getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
-        log_info(message->chat->firstName, message->chat->lastName,
-                 message->chat->username, message->text);
+        log_info(message->from->id, message->chat->firstName,
+                 message->chat->lastName, message->chat->username,
+                 message->text);
         int64_t userId = message->from->id;
         if (req.find(userId) == req.end())
             req.insert(std::pair<int64_t, class request>(userId, {}));

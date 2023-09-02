@@ -39,8 +39,9 @@ class tgbot {
     inline void help();
     inline void any_message();
 
-    void log_info(const std::string &fisrt_name, const std::string &last_name,
-                  const std::string &username, const std::string &text) const;
+    void log_info(const int64_t userId, const std::string &fisrt_name,
+                  const std::string &last_name, const std::string &username,
+                  const std::string &text) const;
 
     inline void generate_joke(int64_t userId, TgBot::Message::Ptr message);
 };
